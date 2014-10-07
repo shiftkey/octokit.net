@@ -25,6 +25,22 @@ namespace Octokit
         }
 
         /// <summary>
+        /// Create a new instance of the GitHub API v3 client pointing to
+        /// https://api.github.com/
+        /// </summary>
+        /// <param name="productInformation">
+        /// The name (and optionally version) of the product using this library. This is sent to the server as part of
+        /// the user agent for analytics purposes.
+        /// </param>
+        /// <param name="defaultTimeout">
+        /// The maximum duration of web requests against the API
+        /// </param>
+        public GitHubClient(ProductHeaderValue productInformation, TimeSpan defaultTimeout)
+            : this(new Connection(productInformation, defaultTimeout))
+        {
+        }
+
+        /// <summary>
         /// Create a new instance of the GitHub API v3 client pointing to 
         /// https://api.github.com/
         /// </summary>

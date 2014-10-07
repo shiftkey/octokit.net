@@ -23,6 +23,7 @@ namespace Octokit
         readonly Authenticator _authenticator;
         readonly JsonHttpPipeline _jsonPipeline;
         readonly IHttpClient _httpClient;
+        readonly TimeSpan _defaultTimeout = TimeSpan.FromSeconds(100);
 
         /// <summary>
         /// Creates a new connection instance used to make requests of the GitHub API.
@@ -34,6 +35,22 @@ namespace Octokit
         public Connection(ProductHeaderValue productInformation)
             : this(productInformation, _defaultGitHubApiUrl, _anonymousCredentials)
         {
+        }
+
+        /// <summary>
+        /// Creates a new connection instance used to make requests of the GitHub API.
+        /// </summary>
+        /// <param name="productInformation">
+        /// The name (and optionally version) of the product using this library. This is sent to the server as part of
+        /// the user agent for analytics purposes.
+        /// </param>
+        /// <param name="defaultTimeout">
+        /// The default timeout for all requests
+        /// </param>
+        public Connection(ProductHeaderValue productInformation, TimeSpan defaultTimeout)
+            : this(productInformation, _defaultGitHubApiUrl, _anonymousCredentials)
+        {
+            this._defaultTimeout = defaultTimeout;
         }
 
         /// <summary>
@@ -164,7 +181,8 @@ namespace Octokit
             {
                 Method = HttpMethod.Get,
                 BaseAddress = BaseAddress,
-                Endpoint = uri.ApplyParameters(parameters)
+                Endpoint = uri.ApplyParameters(parameters),
+                Timeout = _defaultTimeout
             });
         }
 
@@ -235,6 +253,7 @@ namespace Octokit
                 Method = method,
                 BaseAddress = baseAddress ?? BaseAddress,
                 Endpoint = uri,
+                Timeout = _defaultTimeout
             };
 
             if (!String.IsNullOrEmpty(accepts))
@@ -270,7 +289,8 @@ namespace Octokit
             {
                 Method = HttpMethod.Put,
                 BaseAddress = BaseAddress,
-                Endpoint = uri
+                Endpoint = uri,
+                Timeout = _defaultTimeout
             };
             var response = await Run<object>(request, CancellationToken.None);
             return response.StatusCode;
@@ -289,7 +309,8 @@ namespace Octokit
             {
                 Method = HttpMethod.Delete,
                 BaseAddress = BaseAddress,
-                Endpoint = uri
+                Endpoint = uri,
+                Timeout = _defaultTimeout
             };
             var response = await Run<object>(request, CancellationToken.None);
             return response.StatusCode;
@@ -311,7 +332,8 @@ namespace Octokit
                 Method = HttpMethod.Delete,
                 Body = data,
                 BaseAddress = BaseAddress,
-                Endpoint = uri
+                Endpoint = uri,
+                Timeout = _defaultTimeout
             };
             var response = await Run<object>(request, CancellationToken.None);
             return response.StatusCode;
