@@ -12,6 +12,8 @@ namespace Octokit
     /// </summary>
     public interface IConnection
     {
+        TimeSpan Timeout { get; set; }
+
         /// <summary>
         /// Performs an asynchronous HTTP GET request that expects a <seealso cref="IResponse"/> containing HTML.
         /// </summary>
