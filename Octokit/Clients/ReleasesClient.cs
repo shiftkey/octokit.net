@@ -156,25 +156,28 @@ namespace Octokit
         /// <returns>The created <see cref="ReleaseAsset"/>.</returns>
         public Task<ReleaseAsset> UploadAsset(Release release, ReleaseAssetUpload data)
         {
-            Ensure.ArgumentNotNull(release, "release");
-            Ensure.ArgumentNotNull(data, "data");
-
-            var endpoint = release.UploadUrl.ExpandUriTemplate(new { name = data.FileName });
-            return ApiConnection.Post<ReleaseAsset>(
-                endpoint,
-                data.RawData,
-                "application/vnd.github.v3",
-                data.ContentType);
+            return UploadAsset(release, data, Connection.Timeout);
         }
 
-        public Task UploadAsset(Release release, ReleaseAssetUpload data, TimeSpan newTimeout)
+        /// <summary>
+        /// Uploads a <see cref="ReleaseAsset"/> for the specified release.
+        /// </summary>
+        /// <remarks>
+        /// See the <a href="http://developer.github.com/v3/repos/releases/#upload-a-release-asset">API documentation</a> for more information.
+        /// </remarks>
+        /// <param name="release">The <see cref="Release"/> to attach the uploaded asset to</param>
+        /// <param name="data">Description of the asset with its data</param>
+        /// <param name="timeout">The timeout to permit before the upload fails</param>
+        /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
+        /// <returns>The created <see cref="ReleaseAsset"/>.</returns>
+        public Task<ReleaseAsset> UploadAsset(Release release, ReleaseAssetUpload data, TimeSpan timeout)
         {
             Ensure.ArgumentNotNull(release, "release");
             Ensure.ArgumentNotNull(data, "data");
 
             var defaultTimeout = Connection.Timeout;
 
-            Connection.Timeout = newTimeout;
+            Connection.Timeout = timeout;
 
             var endpoint = release.UploadUrl.ExpandUriTemplate(new { name = data.FileName });
 
@@ -187,7 +190,9 @@ namespace Octokit
                 {
                     // this code runs irrespective of the task's completion status
                     Connection.Timeout = defaultTimeout;
-                    return t;
+                    // TODO: i don't think this is the right TPL-ness
+                    // TODO: i'll address it later lol
+                    return t.Result;
                 });
         }
 
