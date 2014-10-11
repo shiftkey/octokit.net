@@ -220,9 +220,6 @@ namespace Octokit.Tests.Clients
 
                 await fixture.UploadAsset(release, uploadData, newTimeout);
 
-                // TODO: do i even need this?
-                var temp = connection.Received().Timeout;
-
                 // verify that the timeout was changed
                 connection.Received().Timeout = newTimeout;
 
