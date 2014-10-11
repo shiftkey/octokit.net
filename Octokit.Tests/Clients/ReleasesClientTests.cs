@@ -201,6 +201,35 @@ namespace Octokit.Tests.Clients
                 await AssertEx.Throws<ArgumentNullException>(async () => await releasesClient.UploadAsset(null, uploadData));
                 await AssertEx.Throws<ArgumentNullException>(async () => await releasesClient.UploadAsset(release, null));
             }
+
+            [Fact]
+            public async Task OverrideDefaultTimeout()
+            {
+                var defaultTimeout = TimeSpan.FromSeconds(1);
+
+                var connection = Substitute.For<IConnection>();
+                connection.Timeout = defaultTimeout;
+                var apiConnection = Substitute.For<IApiConnection>();
+                apiConnection.Connection.Returns(connection);
+
+                var releasesClient = new ReleasesClient(apiConnection);
+
+                var release = new Release { UploadUrl = "https://uploads.github.com/anything" };
+                var uploadData = new ReleaseAssetUpload { FileName = "good", ContentType = "good/good", RawData = Stream.Null };
+
+                var newTimeout = TimeSpan.FromSeconds(100);
+
+                await releasesClient.UploadAsset(release, uploadData, newTimeout);
+
+                // TODO: do i even need this?
+                var temp = connection.Received().Timeout;
+
+                // verify that the timeout was changed
+                connection.Received().Timeout = newTimeout;
+
+                // verify that the timeout is reset
+                Assert.Equal(defaultTimeout, connection.Timeout);
+            }
         }
 
         public class TheGetAssetMethod

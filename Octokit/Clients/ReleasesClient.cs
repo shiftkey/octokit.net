@@ -1,4 +1,5 @@
-﻿#if NET_45
+﻿using System;
+#if NET_45
 using System.Collections.Generic;
 #endif
 using System.Threading.Tasks;
@@ -164,6 +165,30 @@ namespace Octokit
                 data.RawData,
                 "application/vnd.github.v3",
                 data.ContentType);
+        }
+
+        public Task UploadAsset(Release release, ReleaseAssetUpload data, TimeSpan newTimeout)
+        {
+            Ensure.ArgumentNotNull(release, "release");
+            Ensure.ArgumentNotNull(data, "data");
+
+            var defaultTimeout = Connection.Timeout;
+
+            Connection.Timeout = newTimeout;
+
+            var endpoint = release.UploadUrl.ExpandUriTemplate(new { name = data.FileName });
+
+            return ApiConnection.Post<ReleaseAsset>(
+                    endpoint,
+                    data.RawData,
+                    "application/vnd.github.v3",
+                    data.ContentType)
+                .ContinueWith(t =>
+                {
+                    // this code runs irrespective of the task's completion status
+                    Connection.Timeout = defaultTimeout;
+                    return t;
+                });
         }
 
         /// <summary>
