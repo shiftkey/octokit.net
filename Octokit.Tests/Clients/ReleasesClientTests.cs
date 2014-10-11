@@ -205,21 +205,20 @@ namespace Octokit.Tests.Clients
             [Fact]
             public async Task OverrideDefaultTimeout()
             {
-                var defaultTimeout = TimeSpan.FromSeconds(1);
+                var defaultTimeout = TimeSpan.FromSeconds(5);
+                var newTimeout = TimeSpan.FromSeconds(100);
 
                 var connection = Substitute.For<IConnection>();
                 connection.Timeout = defaultTimeout;
                 var apiConnection = Substitute.For<IApiConnection>();
                 apiConnection.Connection.Returns(connection);
 
-                var releasesClient = new ReleasesClient(apiConnection);
+                var fixture = new ReleasesClient(apiConnection);
 
                 var release = new Release { UploadUrl = "https://uploads.github.com/anything" };
                 var uploadData = new ReleaseAssetUpload { FileName = "good", ContentType = "good/good", RawData = Stream.Null };
 
-                var newTimeout = TimeSpan.FromSeconds(100);
-
-                await releasesClient.UploadAsset(release, uploadData, newTimeout);
+                await fixture.UploadAsset(release, uploadData, newTimeout);
 
                 // TODO: do i even need this?
                 var temp = connection.Received().Timeout;
