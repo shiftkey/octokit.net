@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+#if !PORTABLE
 using System.Runtime.Serialization;
+#endif
 
 namespace Octokit
 {

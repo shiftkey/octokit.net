@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+#if !PORTABLE
 using System.Runtime.Serialization;
+#endif
 using Octokit.Internal;
 
 namespace Octokit

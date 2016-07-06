@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+#if !PORTABLE
 using System.Runtime.Serialization;
+#endif
 
 namespace Octokit
 {

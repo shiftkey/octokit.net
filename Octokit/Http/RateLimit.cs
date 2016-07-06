@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+#if !PORTABLE
 using System.Runtime.Serialization;
+#endif
 using Octokit.Helpers;
 using Octokit.Internal;
 
