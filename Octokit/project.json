@@ -39,6 +39,42 @@
           "SIMPLE_JSON_READONLY_COLLECTIONS"
         ]
       }
+    },
+    "netstandard1.3": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Runtime.Serialization.Primitives": "4.1.1"
+      },
+      "buildOptions": {
+        "define": [
+          "CODE_ANALYSIS",
+          "NETFX_CORE",
+          "CODE_ANALYSIS",
+          "SIMPLE_JSON_OBJARRAYINTERNAL",
+          "SIMPLE_JSON_INTERNAL",
+          "NET_45",
+          "PORTABLE",
+          "SIMPLE_JSON_READONLY_COLLECTIONS"
+        ]
+      }
+    },
+    "netstandard1.6": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Runtime.Serialization.Primitives": "4.1.1"
+      },
+      "buildOptions": {
+        "define": [
+          "CODE_ANALYSIS",
+          "NETFX_CORE",
+          "CODE_ANALYSIS",
+          "SIMPLE_JSON_OBJARRAYINTERNAL",
+          "SIMPLE_JSON_INTERNAL",
+          "NET_45",
+          "PORTABLE",
+          "SIMPLE_JSON_READONLY_COLLECTIONS"
+        ]
+      }
     }
   },
   "dependencies": {
