@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Octokit.Internal;
 
 namespace Octokit.Tests.Integration
 {
@@ -213,6 +214,21 @@ namespace Octokit.Tests.Integration
             {
                 Credentials = useSecondUser ? CredentialsSecondUser : Credentials
             };
+        }
+
+        public static IGitHubClient GetAuthenticatedClientWithCassette(string session, bool useSecondUser = false)
+        {
+            var credentials = useSecondUser ? CredentialsSecondUser : Credentials;
+            var httpClient = HttpClientFactory.WithCassette(session);
+            var wrapper = new HttpClientWrapper(httpClient);
+            var connection = new Connection(
+                new ProductHeaderValue("OctokitTests"),
+                TargetUrl,
+                new InMemoryCredentialStore(credentials),
+                wrapper,
+                new SimpleJsonSerializer());
+            var client = new GitHubClient(connection);
+            return client;
         }
 
         public static IGitHubClient GetBasicAuthClient()
