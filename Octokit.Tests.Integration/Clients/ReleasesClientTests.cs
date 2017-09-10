@@ -12,12 +12,12 @@ using Xunit;
 
 public class ReleasesClientTests
 {
-    public class TheCreateReleasesMethod : IDisposable
+    public class TheCreateMethod : IDisposable
     {
         private readonly IReleasesClient _releaseClient;
         private readonly RepositoryContext _context;
 
-        public TheCreateReleasesMethod()
+        public TheCreateMethod()
         {
             var github = Helper.GetAuthenticatedClient();
             _releaseClient = github.Repository.Release;
