@@ -186,12 +186,12 @@ namespace Octokit.Tests.Http
 
             public HttpRequestMessage BuildRequestMessageTester(IRequest request)
             {
-                return BuildRequestMessage(request);
+                return request.BuildRequestMessage();
             }
 
             public async Task<IResponse> BuildResponseTester(HttpResponseMessage responseMessage)
             {
-                return await BuildResponse(responseMessage);
+                return await responseMessage.BuildResponse();
             }
         }
     }
