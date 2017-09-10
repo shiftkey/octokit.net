@@ -25,7 +25,7 @@ public class ReleasesClientTests
             _context = github.CreateRepositoryContext("public-repo").Result;
         }
 
-        [Fact]
+        [IntegrationTest]
         public async Task SendsCreateToCorrectUrl()
         {
             var releaseWithNoUpdate = new NewRelease("0.1") { Draft = true };
@@ -35,7 +35,7 @@ public class ReleasesClientTests
             Assert.NotNull(release);
         }
 
-        [Fact]
+        [IntegrationTest]
         public async Task SendsCreateToCorrectUrlWithRepositoryId()
         {
             var releaseWithNoUpdate = new NewRelease("0.1") { Draft = true };
