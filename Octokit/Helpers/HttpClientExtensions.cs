@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Octokit
 {
-    internal static class HttpClientExtensions
+    public static class HttpClientExtensions
     {
         public static Task<IResponse> Send(this IHttpClient httpClient, IRequest request)
         {
