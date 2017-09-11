@@ -186,7 +186,7 @@ namespace Octokit.Tests.Http
 
             public HttpRequestMessage BuildRequestMessageTester(IRequest request)
             {
-                return request.BuildRequestMessage();
+                return request.BuildMessage();
             }
 
             public async Task<IResponse> BuildResponseTester(HttpResponseMessage responseMessage)
