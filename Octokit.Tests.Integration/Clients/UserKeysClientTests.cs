@@ -5,12 +5,20 @@ using Octokit.Tests.Integration.Helpers;
 
 namespace Octokit.Tests.Integration.Clients
 {
+    [Collection(VCRFixture.Key)]
     public class UserKeysClientTests
     {
+        private readonly VCRFixture fixture;
+
+        public UserKeysClientTests(VCRFixture fixture)
+        {
+            this.fixture = fixture;
+        }
+
         [IntegrationTest]
         public async Task CanGetAllForCurrentUser()
         {
-            var github = Helper.GetAuthenticatedClient();
+            var github = fixture.GetAuthenticatedClient("keys\\get-all-for-current");
 
             using (var context = await github.CreatePublicKeyContext())
             {
@@ -28,7 +36,7 @@ namespace Octokit.Tests.Integration.Clients
         [IntegrationTest]
         public async Task CanGetAllForGivenUser()
         {
-            var github = Helper.GetAuthenticatedClient();
+            var github = fixture.GetAuthenticatedClient("keys\\get-all-for-specific");
 
             var keys = await github.User.GitSshKey.GetAll("shiftkey");
             Assert.NotEmpty(keys);
@@ -43,7 +51,7 @@ namespace Octokit.Tests.Integration.Clients
         [IntegrationTest]
         public async Task CanGetKeyById()
         {
-            var github = Helper.GetAuthenticatedClient();
+            var github = fixture.GetAuthenticatedClient("keys\\get-key-by-id");
 
             using (var context = await github.CreatePublicKeyContext())
             {
@@ -57,7 +65,7 @@ namespace Octokit.Tests.Integration.Clients
         [IntegrationTest]
         public async Task CanCreateAndDeleteKey()
         {
-            var github = Helper.GetAuthenticatedClient();
+            var github = fixture.GetAuthenticatedClient("keys\\create-and-delete");
 
             // Use context helper to create/destroy a key safely (to avoid test failures when a key exists due to not having been deleted)
             string keyTitle = null;

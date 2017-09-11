@@ -2,415 +2,471 @@
 using System.Threading.Tasks;
 using Octokit.Tests.Integration.Helpers;
 using Xunit;
+using Octokit.Tests.Integration;
+using Octokit;
 
-namespace Octokit.Tests.Integration.Clients
+public class WatchedClientTests
 {
-    public class WatchedClientTests
+    [Collection(VCRFixture.Key)]
+    public class TheGetAllForCurrentMethod
     {
-        public class TheGetAllForCurrentMethod
+        readonly VCRFixture fixture;
+
+        public TheGetAllForCurrentMethod(VCRFixture fixture)
         {
-            [IntegrationTest]
-            public async Task CanRetrieveResults()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var repositories = await github.Activity.Watching.GetAllForCurrent();
-
-                Assert.NotEmpty(repositories);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsCorrectCountOfRepositoriesWithoutStart()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var options = new ApiOptions
-                {
-                    PageSize = 3,
-                    PageCount = 1
-                };
-
-                var repositories = await github.Activity.Watching.GetAllForCurrent(options);
-
-                Assert.Equal(3, repositories.Count);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsCorrectCountOfRepositoriesWithStart()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var options = new ApiOptions
-                {
-                    PageSize = 3,
-                    PageCount = 1,
-                    StartPage = 2
-                };
-
-                var repositories = await github.Activity.Watching.GetAllForCurrent(options);
-
-                Assert.Equal(3, repositories.Count);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsDistinctPullRequestsBasedOnStartPage()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var startOptions = new ApiOptions
-                {
-                    PageSize = 1,
-                    PageCount = 1
-                };
-
-                var firstPage = await github.Activity.Watching.GetAllForCurrent(startOptions);
-
-                var skipStartOptions = new ApiOptions
-                {
-                    PageSize = 1,
-                    PageCount = 1,
-                    StartPage = 2
-                };
-
-                var secondPage = await github.Activity.Watching.GetAllForCurrent(skipStartOptions);
-
-                Assert.NotEqual(firstPage[0].Id, secondPage[0].Id);
-            }
+            this.fixture = fixture;
         }
 
-        public class TheGetAllForUserMethod
+        [IntegrationTest]
+        public async Task CanRetrieveResults()
         {
-            [IntegrationTest]
-            public async Task CanRetrieveResults()
-            {
-                var github = Helper.GetAuthenticatedClient();
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-for-current\\default");
 
-                var repositories = await github.Activity.Watching.GetAllForUser(Helper.UserName);
+            var repositories = await github.Activity.Watching.GetAllForCurrent();
 
-                Assert.NotEmpty(repositories);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsCorrectCountOfRepositoriesWithoutStart()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var options = new ApiOptions
-                {
-                    PageSize = 3,
-                    PageCount = 1
-                };
-
-                var repositories = await github.Activity.Watching.GetAllForUser(Helper.UserName, options);
-
-                Assert.Equal(3, repositories.Count);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsCorrectCountOfRepositoriesWithStart()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var options = new ApiOptions
-                {
-                    PageSize = 3,
-                    PageCount = 1,
-                    StartPage = 2
-                };
-
-                var repositories = await github.Activity.Watching.GetAllForUser(Helper.UserName, options);
-
-                Assert.Equal(3, repositories.Count);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsDistinctPullRequestsBasedOnStartPage()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var startOptions = new ApiOptions
-                {
-                    PageSize = 1,
-                    PageCount = 1
-                };
-
-                var firstPage = await github.Activity.Watching.GetAllForUser(Helper.UserName, startOptions);
-
-                var skipStartOptions = new ApiOptions
-                {
-                    PageSize = 1,
-                    PageCount = 1,
-                    StartPage = 2
-                };
-
-                var secondPage = await github.Activity.Watching.GetAllForUser(Helper.UserName, skipStartOptions);
-
-                Assert.NotEqual(firstPage[0].Id, secondPage[0].Id);
-            }
+            Assert.NotEmpty(repositories);
         }
 
-        public class TheGetAllWatchersMethod
+        [IntegrationTest]
+        public async Task ReturnsCorrectCountOfRepositoriesWithoutStart()
         {
-            [IntegrationTest]
-            public async Task CanRetrieveResults()
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-for-current\\no-start");
+
+            var options = new ApiOptions
             {
-                var github = Helper.GetAuthenticatedClient();
+                PageSize = 3,
+                PageCount = 1
+            };
 
-                var repositories = await github.Activity.Watching.GetAllWatchers("octokit", "octokit.net");
+            var repositories = await github.Activity.Watching.GetAllForCurrent(options);
 
-                Assert.NotEmpty(repositories);
-            }
-
-            [IntegrationTest]
-            public async Task CanRetrieveResultsWithRepositoryId()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var repositories = await github.Activity.Watching.GetAllWatchers(7528679);
-
-                Assert.NotEmpty(repositories);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsCorrectCountOfRepositoriesWithoutStart()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var options = new ApiOptions
-                {
-                    PageSize = 3,
-                    PageCount = 1
-                };
-
-                var repositories = await github.Activity.Watching.GetAllWatchers("octokit", "octokit.net", options);
-
-                Assert.Equal(3, repositories.Count);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsCorrectCountOfRepositoriesWithoutStartWithRepositoryId()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var options = new ApiOptions
-                {
-                    PageSize = 3,
-                    PageCount = 1
-                };
-
-                var repositories = await github.Activity.Watching.GetAllWatchers(7528679, options);
-
-                Assert.Equal(3, repositories.Count);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsCorrectCountOfRepositoriesWithStart()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var options = new ApiOptions
-                {
-                    PageSize = 3,
-                    PageCount = 1,
-                    StartPage = 2
-                };
-
-                var repositories = await github.Activity.Watching.GetAllWatchers("octokit", "octokit.net", options);
-
-                Assert.Equal(3, repositories.Count);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsCorrectCountOfRepositoriesWithStartWithRepositoryId()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var options = new ApiOptions
-                {
-                    PageSize = 3,
-                    PageCount = 1,
-                    StartPage = 2
-                };
-
-                var repositories = await github.Activity.Watching.GetAllWatchers(7528679, options);
-
-                Assert.Equal(3, repositories.Count);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsDistinctPullRequestsBasedOnStartPage()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var startOptions = new ApiOptions
-                {
-                    PageSize = 1,
-                    PageCount = 1
-                };
-
-                var firstPage = await github.Activity.Watching.GetAllWatchers("octokit", "octokit.net", startOptions);
-
-                var skipStartOptions = new ApiOptions
-                {
-                    PageSize = 1,
-                    PageCount = 1,
-                    StartPage = 2
-                };
-
-                var secondPage = await github.Activity.Watching.GetAllWatchers("octokit", "octokit.net", skipStartOptions);
-
-                Assert.NotEqual(firstPage[0].Id, secondPage[0].Id);
-            }
-
-            [IntegrationTest]
-            public async Task ReturnsDistinctPullRequestsBasedOnStartPageWithRepositoryId()
-            {
-                var github = Helper.GetAuthenticatedClient();
-
-                var startOptions = new ApiOptions
-                {
-                    PageSize = 1,
-                    PageCount = 1
-                };
-
-                var firstPage = await github.Activity.Watching.GetAllWatchers(7528679, startOptions);
-
-                var skipStartOptions = new ApiOptions
-                {
-                    PageSize = 1,
-                    PageCount = 1,
-                    StartPage = 2
-                };
-
-                var secondPage = await github.Activity.Watching.GetAllWatchers(7528679, skipStartOptions);
-
-                Assert.NotEqual(firstPage[0].Id, secondPage[0].Id);
-            }
+            Assert.Equal(3, repositories.Count);
         }
 
-        public class TheCheckWatchedMethod
+        [IntegrationTest]
+        public async Task ReturnsCorrectCountOfRepositoriesWithStart()
         {
-            readonly IWatchedClient _watchingClient;
-            readonly RepositoryContext _context;
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-for-current\\with-start");
 
-            public TheCheckWatchedMethod()
+            var options = new ApiOptions
             {
-                var github = Helper.GetAuthenticatedClient();
+                PageSize = 3,
+                PageCount = 1,
+                StartPage = 2
+            };
 
-                _watchingClient = github.Activity.Watching;
+            var repositories = await github.Activity.Watching.GetAllForCurrent(options);
 
-                _context = github.CreateRepositoryContext("public-repo").Result;
-            }
-
-            [IntegrationTest]
-            public async Task CheckWatched()
-            {
-                var check = await _watchingClient.CheckWatched(_context.RepositoryOwner, _context.RepositoryName);
-
-                Assert.True(check);
-            }
-
-            [IntegrationTest]
-            public async Task CheckWatchedWithRepositoryId()
-            {
-                var check = await _watchingClient.CheckWatched(_context.Repository.Id);
-
-                Assert.True(check);
-            }
+            Assert.Equal(3, repositories.Count);
         }
 
-        public class TheWatchRepoMethod
+        [IntegrationTest]
+        public async Task ReturnsDistinctWatchersBasedOnStartPage()
         {
-            readonly IWatchedClient _watchingClient;
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-for-current\\with-skip");
 
-            public TheWatchRepoMethod()
+            var startOptions = new ApiOptions
             {
-                var gitHubClient = Helper.GetAuthenticatedClient();
+                PageSize = 1,
+                PageCount = 1
+            };
 
-                _watchingClient = gitHubClient.Activity.Watching;
-            }
+            var firstPage = await github.Activity.Watching.GetAllForCurrent(startOptions);
 
-            [IntegrationTest]
-            public async Task WatchRepo()
+            var skipStartOptions = new ApiOptions
             {
-                var newSubscription = new NewSubscription
-                {
-                    Subscribed = true
-                };
+                PageSize = 1,
+                PageCount = 1,
+                StartPage = 2
+            };
 
-                await _watchingClient.UnwatchRepo("octocat", "hello-worId");
+            var secondPage = await github.Activity.Watching.GetAllForCurrent(skipStartOptions);
 
-                var subscription = await _watchingClient.WatchRepo("octocat", "hello-worId", newSubscription);
-                Assert.NotNull(subscription);
+            Assert.NotEqual(firstPage[0].Id, secondPage[0].Id);
+        }
+    }
 
-                var newWatchers = await _watchingClient.GetAllWatchers("octocat", "hello-worId");
-                var @default = newWatchers.FirstOrDefault(user => user.Login == Helper.UserName);
-                Assert.NotNull(@default);
-            }
+    [Collection(VCRFixture.Key)]
+    public class TheGetAllForUserMethod
+    {
+        readonly VCRFixture fixture;
 
-            [IntegrationTest]
-            public async Task WatchRepoWithRepositoryId()
-            {
-                var newSubscription = new NewSubscription();
-
-                await _watchingClient.UnwatchRepo(18221276);
-
-                var subscription = await _watchingClient.WatchRepo(18221276, newSubscription);
-                Assert.NotNull(subscription);
-
-                var newWatchers = await _watchingClient.GetAllWatchers(18221276);
-                var @default = newWatchers.FirstOrDefault(user => user.Login == Helper.UserName);
-                Assert.NotNull(@default);
-            }
+        public TheGetAllForUserMethod(VCRFixture fixture)
+        {
+            this.fixture = fixture;
         }
 
-        public class TheUnwatchRepoMethod
+        [IntegrationTest]
+        public async Task CanRetrieveResults()
         {
-            readonly IWatchedClient _watchingClient;
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-for-user\\default");
 
-            public TheUnwatchRepoMethod()
+            var repositories = await github.Activity.Watching.GetAllForUser(Helper.UserName);
+
+            Assert.NotEmpty(repositories);
+        }
+
+        [IntegrationTest]
+        public async Task ReturnsCorrectCountOfRepositoriesWithoutStart()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-for-user\\no-start");
+
+            var options = new ApiOptions
             {
-                var gitHubClient = Helper.GetAuthenticatedClient();
+                PageSize = 3,
+                PageCount = 1
+            };
 
-                _watchingClient = gitHubClient.Activity.Watching;
-            }
+            var repositories = await github.Activity.Watching.GetAllForUser(Helper.UserName, options);
 
-            [IntegrationTest]
-            public async Task WatchRepo()
+            Assert.Equal(3, repositories.Count);
+        }
+
+        [IntegrationTest]
+        public async Task ReturnsCorrectCountOfRepositoriesWithStart()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-for-current\\with-start");
+
+            var options = new ApiOptions
             {
-                var newSubscription = new NewSubscription
-                {
-                    Subscribed = true
-                };
+                PageSize = 3,
+                PageCount = 1,
+                StartPage = 2
+            };
 
-                await _watchingClient.UnwatchRepo("octocat", "hello-worId");
+            var repositories = await github.Activity.Watching.GetAllForUser(Helper.UserName, options);
 
-                var subscription = await _watchingClient.WatchRepo("octocat", "hello-worId", newSubscription);
-                Assert.NotNull(subscription);
+            Assert.Equal(3, repositories.Count);
+        }
 
-                await _watchingClient.UnwatchRepo("octocat", "hello-worId");
+        [IntegrationTest]
+        public async Task ReturnsDistinctWatchersBasedOnStartPage()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-for-current\\with-skip");
 
-                var newWatchers = await _watchingClient.GetAllWatchers("octocat", "hello-worId");
-                var @default = newWatchers.FirstOrDefault(user => user.Login == Helper.UserName);
-                Assert.Null(@default);
-            }
-
-            [IntegrationTest]
-            public async Task WatchRepoWithRepositoryId()
+            var startOptions = new ApiOptions
             {
-                var newSubscription = new NewSubscription();
+                PageSize = 1,
+                PageCount = 1
+            };
 
-                await _watchingClient.UnwatchRepo(18221276);
+            var firstPage = await github.Activity.Watching.GetAllForUser(Helper.UserName, startOptions);
 
-                var subscription = await _watchingClient.WatchRepo(18221276, newSubscription);
-                Assert.NotNull(subscription);
+            var skipStartOptions = new ApiOptions
+            {
+                PageSize = 1,
+                PageCount = 1,
+                StartPage = 2
+            };
 
-                await _watchingClient.UnwatchRepo(18221276);
+            var secondPage = await github.Activity.Watching.GetAllForUser(Helper.UserName, skipStartOptions);
 
-                var newWatchers = await _watchingClient.GetAllWatchers(18221276);
-                var @default = newWatchers.FirstOrDefault(user => user.Login == Helper.UserName);
-                Assert.Null(@default);
-            }
+            Assert.NotEqual(firstPage[0].Id, secondPage[0].Id);
+        }
+    }
+
+    [Collection(VCRFixture.Key)]
+    public class TheGetAllWatchersMethod
+    {
+        readonly VCRFixture fixture;
+
+        public TheGetAllWatchersMethod(VCRFixture fixture)
+        {
+            this.fixture = fixture;
+        }
+
+        [IntegrationTest]
+        public async Task CanRetrieveResults()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-watchers\\default");
+
+            var repositories = await github.Activity.Watching.GetAllWatchers("octokit", "octokit.net");
+
+            Assert.NotEmpty(repositories);
+        }
+
+        [IntegrationTest]
+        public async Task CanRetrieveResultsWithRepositoryId()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-watchers\\with-id");
+
+            var repositories = await github.Activity.Watching.GetAllWatchers(7528679);
+
+            Assert.NotEmpty(repositories);
+        }
+
+        [IntegrationTest]
+        public async Task ReturnsCorrectCountOfRepositoriesWithoutStart()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-watchers\\no-start");
+
+            var options = new ApiOptions
+            {
+                PageSize = 3,
+                PageCount = 1
+            };
+
+            var repositories = await github.Activity.Watching.GetAllWatchers("octokit", "octokit.net", options);
+
+            Assert.Equal(3, repositories.Count);
+        }
+
+        [IntegrationTest]
+        public async Task ReturnsCorrectCountOfRepositoriesWithoutStartWithRepositoryId()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-watchers\\no-start-with-id");
+
+            var options = new ApiOptions
+            {
+                PageSize = 3,
+                PageCount = 1
+            };
+
+            var repositories = await github.Activity.Watching.GetAllWatchers(7528679, options);
+
+            Assert.Equal(3, repositories.Count);
+        }
+
+        [IntegrationTest]
+        public async Task ReturnsCorrectCountOfRepositoriesWithStart()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-watchers\\with-start");
+
+            var options = new ApiOptions
+            {
+                PageSize = 3,
+                PageCount = 1,
+                StartPage = 2
+            };
+
+            var repositories = await github.Activity.Watching.GetAllWatchers("octokit", "octokit.net", options);
+
+            Assert.Equal(3, repositories.Count);
+        }
+
+        [IntegrationTest]
+        public async Task ReturnsCorrectCountOfRepositoriesWithStartWithRepositoryId()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-watchers\\with-start-with-id");
+
+            var options = new ApiOptions
+            {
+                PageSize = 3,
+                PageCount = 1,
+                StartPage = 2
+            };
+
+            var repositories = await github.Activity.Watching.GetAllWatchers(7528679, options);
+
+            Assert.Equal(3, repositories.Count);
+        }
+
+        [IntegrationTest]
+        public async Task ReturnsDistinctWatchersBasedOnStartPage()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-watchers\\with-start");
+
+            var startOptions = new ApiOptions
+            {
+                PageSize = 1,
+                PageCount = 1
+            };
+
+            var firstPage = await github.Activity.Watching.GetAllWatchers("octokit", "octokit.net", startOptions);
+
+            var skipStartOptions = new ApiOptions
+            {
+                PageSize = 1,
+                PageCount = 1,
+                StartPage = 2
+            };
+
+            var secondPage = await github.Activity.Watching.GetAllWatchers("octokit", "octokit.net", skipStartOptions);
+
+            Assert.NotEqual(firstPage[0].Id, secondPage[0].Id);
+        }
+
+        [IntegrationTest]
+        public async Task ReturnsDistinctWatchersBasedOnStartPageWithRepositoryId()
+        {
+            var github = fixture.GetAuthenticatedClient("watched\\get-all-watchers\\different-pages");
+
+            var startOptions = new ApiOptions
+            {
+                PageSize = 1,
+                PageCount = 1
+            };
+
+            var firstPage = await github.Activity.Watching.GetAllWatchers(7528679, startOptions);
+
+            var skipStartOptions = new ApiOptions
+            {
+                PageSize = 1,
+                PageCount = 1,
+                StartPage = 2
+            };
+
+            var secondPage = await github.Activity.Watching.GetAllWatchers(7528679, skipStartOptions);
+
+            Assert.NotEqual(firstPage[0].Id, secondPage[0].Id);
+        }
+    }
+
+    [Collection(VCRFixture.Key)]
+    public class TheCheckWatchedMethod
+    {
+        readonly VCRFixture fixture;
+
+        RepositoryContext _context;
+
+        public TheCheckWatchedMethod(VCRFixture fixture)
+        {
+            this.fixture = fixture;
+        }
+
+        private async Task<IWatchedClient> Setup(string session)
+        {
+            var github = fixture.GetAuthenticatedClient(session);
+            _context = await github.CreateRepositoryContext("public-repo");
+            return github.Activity.Watching;
+        }
+
+        [IntegrationTest]
+        public async Task CheckWatched()
+        {
+            var client = await Setup("watched\\check-watched\\default");
+
+            var check = await client.CheckWatched(_context.RepositoryOwner, _context.RepositoryName);
+
+            Assert.True(check);
+        }
+
+        [IntegrationTest]
+        public async Task CheckWatchedWithRepositoryId()
+        {
+            var client = await Setup("watched\\check-watched\\with-id");
+
+            var check = await client.CheckWatched(_context.Repository.Id);
+
+            Assert.True(check);
+        }
+    }
+
+    [Collection(VCRFixture.Key)]
+    public class TheWatchRepoMethod
+    {
+        readonly VCRFixture fixture;
+
+        RepositoryContext _context;
+
+        public TheWatchRepoMethod(VCRFixture fixture)
+        {
+            this.fixture = fixture;
+        }
+
+        private async Task<IWatchedClient> Setup(string session)
+        {
+            var github = fixture.GetAuthenticatedClient(session);
+            _context = await github.CreateRepositoryContext("public-repo");
+            return github.Activity.Watching;
+        }
+
+        [IntegrationTest]
+        public async Task WatchRepo()
+        {
+            var client = await Setup("watchers\\watch-repo\\default");
+
+            var newSubscription = new NewSubscription
+            {
+                Subscribed = true
+            };
+
+            await client.UnwatchRepo("octocat", "hello-worId");
+
+            var subscription = await client.WatchRepo("octocat", "hello-worId", newSubscription);
+            Assert.NotNull(subscription);
+
+            var newWatchers = await client.GetAllWatchers("octocat", "hello-worId");
+            var @default = newWatchers.FirstOrDefault(user => user.Login == Helper.UserName);
+            Assert.NotNull(@default);
+        }
+
+        [IntegrationTest]
+        public async Task WatchRepoWithRepositoryId()
+        {
+            var client = await Setup("watchers\\watch-repo\\with-id");
+
+            var newSubscription = new NewSubscription();
+
+            await client.UnwatchRepo(18221276);
+
+            var subscription = await client.WatchRepo(18221276, newSubscription);
+            Assert.NotNull(subscription);
+
+            var newWatchers = await client.GetAllWatchers(18221276);
+            var @default = newWatchers.FirstOrDefault(user => user.Login == Helper.UserName);
+            Assert.NotNull(@default);
+        }
+    }
+
+    [Collection(VCRFixture.Key)]
+    public class TheUnwatchRepoMethod
+    {
+        readonly VCRFixture fixture;
+
+        RepositoryContext _context;
+
+        public TheUnwatchRepoMethod(VCRFixture fixture)
+        {
+            this.fixture = fixture;
+        }
+
+        private async Task<IWatchedClient> Setup(string session)
+        {
+            var github = fixture.GetAuthenticatedClient(session);
+            _context = await github.CreateRepositoryContext("public-repo");
+            return github.Activity.Watching;
+        }
+
+        [IntegrationTest]
+        public async Task UnwatchRepo()
+        {
+            var client = await Setup("watchers\\unwatch\\default");
+
+            var newSubscription = new NewSubscription
+            {
+                Subscribed = true
+            };
+
+            await client.UnwatchRepo("octocat", "hello-worId");
+
+            var subscription = await client.WatchRepo("octocat", "hello-worId", newSubscription);
+            Assert.NotNull(subscription);
+
+            await client.UnwatchRepo("octocat", "hello-worId");
+
+            var newWatchers = await client.GetAllWatchers("octocat", "hello-worId");
+            var @default = newWatchers.FirstOrDefault(user => user.Login == Helper.UserName);
+            Assert.Null(@default);
+        }
+
+        [IntegrationTest]
+        public async Task UnwatchRepoWithRepositoryId()
+        {
+            var client = await Setup("watchers\\unwatch\\with-id");
+
+            var newSubscription = new NewSubscription();
+
+            await client.UnwatchRepo(18221276);
+
+            var subscription = await client.WatchRepo(18221276, newSubscription);
+            Assert.NotNull(subscription);
+
+            await client.UnwatchRepo(18221276);
+
+            var newWatchers = await client.GetAllWatchers(18221276);
+            var @default = newWatchers.FirstOrDefault(user => user.Login == Helper.UserName);
+            Assert.Null(@default);
         }
     }
 }

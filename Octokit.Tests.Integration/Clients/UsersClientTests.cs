@@ -2,18 +2,26 @@
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Octokit;
-using Octokit.Tests.Helpers;
 using Octokit.Tests.Integration;
 using Xunit;
 
 public class UsersClientTests
 {
+    [Collection(VCRFixture.Key)]
     public class TheGetMethod
     {
+        readonly VCRFixture fixture;
+
+        public TheGetMethod(VCRFixture fixture)
+        {
+            this.fixture = fixture;
+        }
+
+
         [IntegrationTest]
         public async Task ReturnsSpecifiedUser()
         {
-            var github = Helper.GetAuthenticatedClient();
+            var github = fixture.GetAuthenticatedClient("user\\user");
 
             var user = await github.User.Get("tclem");
 
@@ -24,7 +32,7 @@ public class UsersClientTests
         [IntegrationTest]
         public async Task ReturnsSpecifiedOrganization()
         {
-            var github = Helper.GetAuthenticatedClient();
+            var github = fixture.GetAuthenticatedClient("user\\org");
 
             var user = await github.User.Get("octokit");
 
@@ -32,6 +40,7 @@ public class UsersClientTests
             Assert.Equal(AccountType.Organization, user.Type);
         }
 
+        // TODO: what should i do here?
         [IntegrationTest]
         public async Task ReturnsSpecifiedUserUsingAwaitableCredentialProvider()
         {
@@ -52,12 +61,20 @@ public class UsersClientTests
         }
     }
 
+    [Collection(VCRFixture.Key)]
     public class TheCurrentMethod
     {
+        readonly VCRFixture fixture;
+
+        public TheCurrentMethod(VCRFixture fixture)
+        {
+            this.fixture = fixture;
+        }
+
         [IntegrationTest]
         public async Task ReturnsSpecifiedUser()
         {
-            var github = Helper.GetAuthenticatedClient();
+            var github = fixture.GetAuthenticatedClient("user\\current");
 
             var user = await github.User.Current();
 
@@ -66,12 +83,20 @@ public class UsersClientTests
         }
     }
 
+    [Collection(VCRFixture.Key)]
     public class TheUpdateMethod
     {
+        readonly VCRFixture fixture;
+
+        public TheUpdateMethod(VCRFixture fixture)
+        {
+            this.fixture = fixture;
+        }
+
         [IntegrationTest]
         public async Task FailsWhenNotAuthenticated()
         {
-            var github = Helper.GetAnonymousClient();
+            var github = fixture.GetAnonymousClient("user\\unauthenticated");
 
             var userUpdate = new UserUpdate
             {
@@ -86,7 +111,7 @@ public class UsersClientTests
         [IntegrationTest]
         public async Task FailsWhenAuthenticatedWithBadCredentials()
         {
-            var github = Helper.GetBadCredentialsClient();
+            var github = fixture.GetClientWithBadCredentials("user\\error");
 
             var userUpdate = new UserUpdate
             {
